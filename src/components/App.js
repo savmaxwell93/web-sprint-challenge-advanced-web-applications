@@ -2,6 +2,8 @@ import React from 'react';
 import { Route, Redirect,Switch } from "react-router-dom";
 import styled from 'styled-components';
 
+import PrivateRoute from './PrivateRoute';
+
 import Header from './Header';
 import BloomHeader from './BloomHeader';
 import Login from './Login';
@@ -15,18 +17,10 @@ const App = () => {
       <Header/>
       <RouteContainer>
         <Switch>
-          <Route exact path="/logout">
-            <Logout/>
-          </Route>
-          <Route exact path="/view">
-            <View/>
-          </Route>
-          <Route exact path="/login" >
-            <Login/>
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/login"/>
-          </Route>
+          <PrivateRoute exact path="/logout" component={Logout}/>
+          <PrivateRoute exact path="/view" component={View}/>
+          <Route exact path="/login" component={Login}/>
+          <Route exact path="/" component={Login}/>
         </Switch>          
       </RouteContainer>
     </AppContainer>
