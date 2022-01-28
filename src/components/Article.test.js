@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { getByTestId, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MutationObserver from 'mutationobserver-shim';
 
@@ -10,6 +10,13 @@ const testArticle = {
     id: 1,
     headline: 'Headline',
     author: 'Author',
+    summary: 'Summary',
+    body: 'Body'
+}
+const testArticleNoAuthor = {
+    id: 1,
+    headline: 'Headline',
+    author: '',
     summary: 'Summary',
     body: 'Body'
 }
@@ -35,9 +42,17 @@ test('renders headline, author, summary and body from the article when passed in
 });
 
 test('renders "Associated Press" when no author is given', ()=> {
+    render(<Article article={testArticleNoAuthor}/>)
+    const author = screen.getByTestId(/author/i);
+    expect(author).toHaveTextContent(/associated press/i);
 });
 
-test('executes handleDelete when the delete button is pressed', ()=> {
+test('executes handleDelete when the delete button is pressed', async ()=> {
+    const mockHandleDelete = jest.fn();
+    render(<Article article={testArticle} handleDelete={mockHandleDelete} />);
+    const deleteButton = screen.getByTestId('deleteButton');
+    userEvent.click(deleteButton);
+    expect(mockHandleDelete).toHaveBeenCalled();
 });
 
 //Task List: 
