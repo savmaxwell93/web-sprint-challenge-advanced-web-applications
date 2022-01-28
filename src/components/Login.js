@@ -1,12 +1,62 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Login = () => {
-    
-    return(<ComponentContainer>
+    const [credentials, setCredentials] = useState({
+            username: '',
+            password: ''
+    })
+    const [error, setError] = useState('');
+    const { push } = useHistory();
+
+    const handleChange = (e) => {
+        setCredentials({
+            ...credentials,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        axios.post('http://localhost:5000/api/login', credentials)
+            .then(resp => {
+                const { token } = resp.data;
+                localStorage.setItem('token', token);
+                push('/view');
+            })
+            .catch(err => {
+                setError('Invalid username/password combination');
+                console.error(err);
+            })
+    }
+
+    return(
+    <ComponentContainer>
         <ModalContainer>
             <h1>Welcome to Blogger Pro</h1>
             <h2>Please enter your account information.</h2>
+            <FormGroup onSubmit={handleSubmit}>
+                <Label>Username</Label>
+                <Input
+                    type="text"
+                    id="username"
+                    name="username"
+                    onChange={handleChange}
+                />
+                <Label>Password</Label>
+                <Input
+                    type="password"
+                    id="password"
+                    name="password"
+                    onChange={handleChange}
+                />
+                <Button id="submit">Login</Button>
+            </FormGroup>
+            {
+                (error !== '') ? <p id="error">{error}</p> : <p></p>
+            }
         </ModalContainer>
     </ComponentContainer>);
 }
